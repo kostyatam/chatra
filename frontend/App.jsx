@@ -1,40 +1,55 @@
 import * as React from 'react';
 import * as axios from 'axios';
 import Search from './components/Search/Search';
-import Profile from './components/Profile/Profile';
+import ProfilesList from './components/ProfilesList/ProfilesList';
+
+const css = require('./app.scss');
 
 export default class App extends React.Component {
   state = {
+    userLoading: false,
     searchValue: '',
     players: [],
   }
 
+  handleChange = (e) => {
+    const { value } = e.target;
+    this.setState({ searchValue: value });
+  }
+
   handleSearch = (value) => {
-    const [name] = value.match(/(?:https:\/\/steamcommunity\.com\/id\/)?(\w+)/i);
-    axios.get(`/api/getUserInfo?name=${name}`).then(({ data }) => {
-      const { players } = data;
-      this.setState({
-        players,
-      });
+    const matches = value.match(/(?:https:\/\/steamcommunity\.com\/id\/)?(\w+)/i);
+    const name = (matches && matches.pop()) || value;
+    this.setState({
+      userLoading: true,
     });
+    axios.get(`/api/getUserInfo?name=${name}`).then(({ data }) => {
+      const { player } = data;
+      const { players } = this.state;
+      this.setState({
+        players: players.concat(player),
+        searchValue: '',
+        userLoading: false,
+      });
+    })
+      .catch(() => {
+        this.setState({
+          userLoading: false,
+        });
+      });
   }
 
   render() {
-    const { searchValue, players } = this.state;
+    const { searchValue, players, userLoading } = this.state;
     return (
       <div>
         <Search
+          onChange={this.handleChange}
           onSearch={this.handleSearch}
           value={searchValue}
+          progress={userLoading}
         />
-        {
-          players.map(player => (
-            <Profile
-              key={player.steamid}
-              {...player}
-            />
-          ))
-        }
+        <ProfilesList players={players} />
       </div>
     );
   }

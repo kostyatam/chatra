@@ -1,0 +1,27 @@
+.profile {
+  display: flex;
+  flex: 0 0 auto;
+  padding: .5em;
+  border: 2px solid #209CEE;
+  border-radius: .5rem;
+}
+
+.avatar {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50px;
+}
+
+.info {
+  padding: 0 0 0 1rem;
+}
+
+.name {
+  font-size: 2rem;
+}
+
+.realname {
+  font-size: 1rem;
+  color: #999;
+}

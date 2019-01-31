@@ -58,7 +58,7 @@ app.get('/api/getUserInfo', (req, res, next) => {
       if (success === 1) {
         return steamApi
           .get('/ISteamUser/GetPlayerSummaries/v0002', { steamIds: steamid })
-          .then(players => res.json(players));
+          .then(({ players }) => res.json({ player: players[0] }));
       }
 
       return new Error(res);

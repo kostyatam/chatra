@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const css = require('./Profile.scss');
 
 const Profile = ({ personaname, avatarmedium, realname }) => (
-  <div>
+  <div className={css.profile}>
     <div className={css.avatar} style={{ backgroundImage: `url(${avatarmedium})` }} />
     <div className={css.info}>
       <div className={css.name}>{personaname}</div>
