@@ -11,8 +11,8 @@ export default class App extends React.Component {
 
   handleSearch = (value) => {
     const [name] = value.match(/(?:https:\/\/steamcommunity\.com\/id\/)?(\w+)/i);
-    axios.get(`/api/getUserInfo?name=${name}`).then((res) => {
-      const { players } = res;
+    axios.get(`/api/getUserInfo?name=${name}`).then(({ data }) => {
+      const { players } = data;
       this.setState({
         players,
       });
@@ -27,7 +27,14 @@ export default class App extends React.Component {
           onSearch={this.handleSearch}
           value={searchValue}
         />
-        {players.map(player => <Profile {...player} />)}
+        {
+          players.map(player => (
+            <Profile
+              key={player.steamid}
+              {...player}
+            />
+          ))
+        }
       </div>
     );
   }

@@ -3,24 +3,26 @@ import PropTypes from 'prop-types';
 
 const css = require('./Profile.scss');
 
-const Profile = ({ personname, avatarmedium, realname }) => (
+const Profile = ({ personaname, avatarmedium, realname }) => (
   <div>
     <div className={css.avatar} style={{ backgroundImage: `url(${avatarmedium})` }} />
     <div className={css.info}>
-      <div className={css.name}>{personname}</div>
+      <div className={css.name}>{personaname}</div>
       <div className={css.realname}>{realname}</div>
     </div>
   </div>
 );
 
 Profile.propTypes = {
-  personname: PropTypes.string,
+  personaname: PropTypes.string,
   avatarmedium: PropTypes.string,
   realname: PropTypes.string,
 };
 
 Profile.defaultProps = {
-  personname: '',
+  personaname: '',
   avatarmedium: '',
   realname: '',
 };
+
+export default Profile;
