@@ -1,5 +1,5 @@
 const path = require('path');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -8,10 +8,10 @@ module.exports = {
   entry: path.join(__dirname, 'frontend/index.jsx'),
   output: {
     path: path.join(__dirname, 'public/dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
   },
   module: {
     rules: [{
@@ -21,8 +21,8 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-env', '@babel/preset-react'],
-          plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/plugin-proposal-class-properties']
-        }
+          plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/plugin-proposal-class-properties'],
+        },
       },
     }, {
       test: /\.scss$/,
@@ -32,28 +32,28 @@ module.exports = {
           loader: 'css-loader',
           options: {
             modules: true,
-          }
+          },
         },
-        'sass-loader'
-      ]
+        'sass-loader',
+      ],
     }, {
       test: /\.css$/,
-      use: ['style-loader', 'css-loader']
-    }]
+      use: ['style-loader', 'css-loader'],
+    }],
   },
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'frontend/index.html'
+      template: 'frontend/index.html',
     }),
-    new MiniCssExtractPlugin('styles.css')
+    new MiniCssExtractPlugin('styles.css'),
   ],
   devServer: {
     contentBase: path.join(__dirname, 'public/dist'),
     compress: true,
     port: 9000,
     proxy: {
-      '/api': 'http://localhost:4040'
-    }
-  }
-}
+      '/api': 'http://localhost:4040',
+    },
+  },
+};
