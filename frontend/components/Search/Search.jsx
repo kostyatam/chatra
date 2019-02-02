@@ -5,11 +5,15 @@ const css = require('./Search.scss');
 
 export default class Search extends React.Component {
   handleEnterKey = (e) => {
+    if (e.keyCode === 13) {
+      this.handleSearch();
+    }
+  }
+
+  handleSearch = () => {
     const { value, onSearch } = this.props;
     if (!value) return;
-    if (e.keyCode === 13) {
-      onSearch(value);
-    }
+    onSearch(value);
   }
 
   render() {
@@ -25,7 +29,7 @@ export default class Search extends React.Component {
           disabled={progress}
           placeholder="Steam url or account name"
         />
-        <div className={css.btn} />
+        <div className={`${css.btn} ${progress ? css.btn_loading : ''}`} onClick={this.handleSearch} />
       </div>
     );
   }
