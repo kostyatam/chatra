@@ -53,7 +53,7 @@ export default class App extends React.Component {
         players: players.concat(player),
         searchValue: '',
         userLoading: false,
-        errorMessage,
+        playerErrMsg: errorMessage,
       });
     })
       .catch(({ response: { data: { errorMessage } } }) => {
@@ -77,12 +77,13 @@ export default class App extends React.Component {
       this.setState({
         games,
         gamesLoading: false,
-        errorMessage,
+        gamesErrMsg: errorMessage,
       });
     })
       .catch(({ response: { data: { errorMessage } } }) => {
         this.setState({
           gamesLoading: false,
+          games: [],
           gamesErrMsg: errorMessage,
         });
       });

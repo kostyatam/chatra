@@ -46,7 +46,7 @@ app.get('/api/getUserInfo', (req, res) => {
   const { name } = req.query;
 
   if (!name) {
-    res.status(500).json({ errorMessage: 'Something went wrong' });
+    return res.status(500).json({ errorMessage: 'Something went wrong' });
   }
 
   steamApi
@@ -80,7 +80,7 @@ app.get('/api/getMultiplayerGames', (req, res) => {
   const { steamIds } = req.query;
 
   if (!steamIds) {
-    res.status(500).json({ errorMessage: 'Something went wrong' });
+    return res.status(500).json({ errorMessage: 'Something went wrong' });
   }
 
   const requests = steamIds.split(',').map(steamId => steamApi.get('/IPlayerService/GetOwnedGames/v0001', {
@@ -89,10 +89,10 @@ app.get('/api/getMultiplayerGames', (req, res) => {
   }));
 
   Promise.all(requests).then((result) => {
-    const allPlayersHasGames = result.every(player => player.games.length);
+    const allPlayersHasGames = result.every(player => player.game_count);
 
     if (!allPlayersHasGames) {
-      res.status(404).json({ errorMessage: 'Common games not found' });
+      return res.status(404).json({ errorMessage: 'Common games not found' });
     }
 
     const commonGames = intersectionWith(
@@ -101,7 +101,7 @@ app.get('/api/getMultiplayerGames', (req, res) => {
     );
 
     if (!commonGames.length) {
-      res.status(404).json({ errorMessage: 'Common games not found' });
+      return res.status(404).json({ errorMessage: 'Common games not found' });
     }
 
     return getAllSteamMultiplayerGames()
@@ -109,7 +109,7 @@ app.get('/api/getMultiplayerGames', (req, res) => {
         const multiplayerGames = commonGames.filter(game => allMultiplayerGames[game.appid]);
 
         if (!multiplayerGames.length) {
-          res.status(404).json({ errorMessage: 'Common games not found' });
+          return res.status(404).json({ errorMessage: 'Common games not found' });
         }
 
         return res.json({ games: multiplayerGames });
