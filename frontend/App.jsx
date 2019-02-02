@@ -4,7 +4,7 @@ import Search from './components/Search/Search';
 import ProfilesList from './components/ProfilesList/ProfilesList';
 import Games from './components/Games/Games';
 
-const css = require('./app.scss');
+const css = require('./App.scss');
 
 export default class App extends React.Component {
   state = {
@@ -39,7 +39,7 @@ export default class App extends React.Component {
     });
     axios.get(`/api/getUserInfo?name=${name}`).then(({ data }) => {
       const { player } = data;
-      const { players } = this.state;
+      const { players, errorMessage } = this.state;
       const isAlreadyAdded = players.some(({ steamid }) => steamid === player.steamid);
 
       if (isAlreadyAdded) {
@@ -53,9 +53,10 @@ export default class App extends React.Component {
         players: players.concat(player),
         searchValue: '',
         userLoading: false,
+        errorMessage,
       });
     })
-      .catch(({ errorMessage }) => {
+      .catch(({ response: { data: { errorMessage } } }) => {
         this.setState({
           userLoading: false,
           playerErrMsg: errorMessage,
@@ -72,12 +73,14 @@ export default class App extends React.Component {
     });
 
     axios.get(`/api/getMultiplayerGames?steamIds=${steamIds}`).then(({ data }) => {
+      const { games, errorMessage } = data;
       this.setState({
-        games: data.games,
+        games,
         gamesLoading: false,
+        errorMessage,
       });
     })
-      .catch(({ errorMessage }) => {
+      .catch(({ response: { data: { errorMessage } } }) => {
         this.setState({
           gamesLoading: false,
           gamesErrMsg: errorMessage,
@@ -99,7 +102,7 @@ export default class App extends React.Component {
             onSearch={this.handleSearch}
             value={searchValue}
             progress={userLoading}
-            errMsg={gamesErrMsg}
+            errMsg={playerErrMsg}
           />
         </div>
         <div className={css.row}>
@@ -114,7 +117,7 @@ export default class App extends React.Component {
             disabled={gamesSearchDisabled}
             onSearch={this.handleGamesSearch}
             progress={gamesLoading}
-            errMsg={playerErrMsg}
+            errMsg={gamesErrMsg}
           />
         </div>
       </div>

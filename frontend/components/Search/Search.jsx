@@ -1,5 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import ErrorMsg from '../ErrorMsg/ErrorMsg';
 
 const css = require('./Search.scss');
 
@@ -17,7 +18,9 @@ export default class Search extends React.Component {
   }
 
   render() {
-    const { value, onChange, progress } = this.props;
+    const {
+      value, onChange, progress, errMsg,
+    } = this.props;
     return (
       <div className={css.search}>
         <input
@@ -30,6 +33,7 @@ export default class Search extends React.Component {
           placeholder="Steam url or account name"
         />
         <div className={`${css.btn} ${progress ? css.btn_loading : ''}`} onClick={this.handleSearch} />
+        <ErrorMsg message={errMsg} />
       </div>
     );
   }
@@ -40,6 +44,7 @@ Search.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.string,
   progress: PropTypes.bool,
+  errMsg: PropTypes.string,
 };
 
 Search.defaultProps = {
@@ -47,4 +52,5 @@ Search.defaultProps = {
   onChange: () => {},
   value: '',
   progress: false,
+  errMsg: '',
 };

@@ -42,9 +42,13 @@ const steamApi = {
 };
 
 const app = express();
-app.get('/api/getUserInfo', (req, res, next) => {
+app.get('/api/getUserInfo', (req, res) => {
   const { name } = req.query;
-  // add if !name Error
+
+  if (!name) {
+    res.status(500).json({ errorMessage: 'Something went wrong' });
+  }
+
   steamApi
     .get('/ISteamUser/ResolveVanityURL/v0001', {
       vanityurl: name,
@@ -52,7 +56,9 @@ app.get('/api/getUserInfo', (req, res, next) => {
     .then((user) => {
       const { success, steamid } = user;
       if (success === 42) {
-        return res.status(404).end();
+        return res.status(404).json({
+          errorMessage: 'User not found',
+        });
       }
 
       if (success === 1) {
@@ -63,26 +69,55 @@ app.get('/api/getUserInfo', (req, res, next) => {
 
       return new Error(res);
     })
-    .catch(next);
+    .catch(() => {
+      res.status(500).json({
+        errorMessage: 'Something went wrong',
+      });
+    });
 });
 
-app.get('/api/getMultiplayerGames', (req, res, next) => {
+app.get('/api/getMultiplayerGames', (req, res) => {
   const { steamIds } = req.query;
+
+  if (!steamIds) {
+    res.status(500).json({ errorMessage: 'Something went wrong' });
+  }
+
   const requests = steamIds.split(',').map(steamId => steamApi.get('/IPlayerService/GetOwnedGames/v0001', {
     steamId,
     include_appinfo: 1,
   }));
 
   Promise.all(requests).then((result) => {
-    const games = intersectionWith(
+    const allPlayersHasGames = result.every(player => player.games.length);
+
+    if (!allPlayersHasGames) {
+      res.status(404).json({ errorMessage: 'Common games not found' });
+    }
+
+    const commonGames = intersectionWith(
       ...result.map(response => response.games),
       (a, b) => a.appid === b.appid,
     );
+
+    if (!commonGames.length) {
+      res.status(404).json({ errorMessage: 'Common games not found' });
+    }
+
     return getAllSteamMultiplayerGames()
-      .then(multiplayerGames => games.filter(game => multiplayerGames[game.appid]));
+      .then((allMultiplayerGames) => {
+        const multiplayerGames = commonGames.filter(game => allMultiplayerGames[game.appid]);
+
+        if (!multiplayerGames.length) {
+          res.status(404).json({ errorMessage: 'Common games not found' });
+        }
+
+        return res.json({ games: multiplayerGames });
+      });
   })
-    .then(games => res.json({ games }))
-    .catch(next);
+    .catch(() => {
+      res.status(500).json({ errorMessage: 'Something went wrong' });
+    });
 });
 
 app.listen(PORT);

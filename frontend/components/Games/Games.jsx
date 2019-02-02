@@ -1,10 +1,13 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import ErrorMsg from '../ErrorMsg/ErrorMsg';
 
 const css = require('./Games.scss');
 
 
-const Games = ({ onSearch, games, disabled, progress }) => (
+const Games = ({
+  onSearch, games, disabled, progress, errMsg,
+}) => (
   <div className={css.games}>
     <button
       type="button"
@@ -15,6 +18,7 @@ const Games = ({ onSearch, games, disabled, progress }) => (
     >
       Which games we can play together?
     </button>
+    <ErrorMsg message={errMsg} />
     <div className="gamesList">
       {games.map((game) => {
         const { appid, name, img_logo_url: hash } = game;
@@ -35,6 +39,7 @@ Games.propTypes = {
   games: PropTypes.arrayOf(PropTypes.object),
   disabled: PropTypes.bool,
   progress: PropTypes.bool,
+  errMsg: PropTypes.string,
 };
 
 Games.defaultProps = {
@@ -42,6 +47,7 @@ Games.defaultProps = {
   games: [],
   disabled: true,
   progress: false,
+  errMsg: '',
 };
 
 export default Games;
