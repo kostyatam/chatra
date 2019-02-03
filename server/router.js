@@ -10,7 +10,7 @@ api.use(sendErrorMiddleware);
 api.get(API.GET_USER_INFO.PATH, getUserInfoController);
 api.get(API.GET_MULTIPLAYER_GAMES.PATH, getMultiplayerGamesController);
 
-function sendErrorMiddleware (req, res, next) {
+function sendErrorMiddleware(req, res, next) {
   res.sendError = function (status, errorMessage) {
     this.status(status).json({
       errorMessage,

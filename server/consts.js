@@ -1,4 +1,4 @@
-module.exports.PORT = 4040;
+module.exports.PORT =  process.env.PORT || 4040;
 module.exports.PUPBLIC_PATH = '../public';
 
 module.exports.API = {

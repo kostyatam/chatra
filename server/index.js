@@ -9,5 +9,4 @@ app.use(express.static(path.resolve(__dirname, PUPBLIC_PATH)));
 app.use(API.PATH, router.api);
 app.use('*', (req, res) => res.sendFile(path.resolve(__dirname, PUPBLIC_PATH, 'index.html')));
 
-
-app.listen(PORT);
+module.exports.run = cb => app.listen(PORT, cb);

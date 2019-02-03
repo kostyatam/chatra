@@ -1,9 +1,12 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
+const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
-  mode: 'development',
+  mode: devMode ? 'development' : 'production',
   devtool: 'eval-source-map',
   entry: path.join(__dirname, 'frontend/index.jsx'),
   output: {
@@ -27,18 +30,29 @@ module.exports = {
     }, {
       test: /\.scss$/,
       use: [
-        'style-loader',
+        devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
         {
           loader: 'css-loader',
           options: {
             modules: true,
           },
         },
+        {
+          loader: 'postcss-loader',
+          options: {
+            ident: 'postcss',
+            plugins: [
+              require('autoprefixer')({
+                browsers: ['last 4 version'],
+              }),
+            ]
+          }
+        },
         'sass-loader',
       ],
     }, {
       test: /\.css$/,
-      use: ['style-loader', 'css-loader'],
+      use: [devMode ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader'],
     }],
   },
   plugins: [
@@ -46,7 +60,10 @@ module.exports = {
       filename: 'index.html',
       template: 'frontend/index.html',
     }),
-    new MiniCssExtractPlugin('styles.css'),
+    new MiniCssExtractPlugin({
+      filename: 'styles.css',
+    }),
+    new OptimizeCSSAssetsPlugin({}),
   ],
   devServer: {
     contentBase: path.join(__dirname, 'public'),
