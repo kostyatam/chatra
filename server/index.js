@@ -7,16 +7,7 @@ const intersectionWith = require('lodash/intersectionWith');
 const PORT = 4040;
 const API_URL = 'http://api.steampowered.com';
 const API_PRIVATE_KEY = '8738270D3B5D8959A13E1BC255D5702A';
-
-const getAllSteamMultiplayerGames = () => new Promise((resolve, reject) => request.get({
-  url: 'http://steamspy.com/api.php?request=tag&tag=Multiplayer',
-  json: true,
-}, (err, res, games) => {
-  if (err) {
-    return reject(err);
-  }
-  return resolve(games);
-}));
+const MS_IN_DAY = 60 * 60 * 24 * 1000;
 
 const steamApi = {
   get(uri, qs) {
@@ -38,6 +29,29 @@ const steamApi = {
         return resolve(data.response);
       });
     });
+  },
+  _multiplayerGames: null,
+  _lastMultiplayerGamesRequest: null,
+  getAllSteamMultiplayerGames() {
+    const shouldUpdate = this._lastMultiplayerGamesRequest - Date.now() > MS_IN_DAY;
+    if (!this._multiplayerGames || shouldUpdate) {
+      const gamesRequest = new Promise((resolve, reject) => request.get({
+        url: 'http://steamspy.com/api.php?request=tag&tag=Multiplayer',
+        json: true,
+      }, (err, res, games) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(games);
+      })).then((games) => {
+        this._multiplayerGames = gamesRequest;
+        this._lastMultiplayerGamesRequest = Date.now();
+        return games;
+      });
+      return gamesRequest;
+    }
+
+    return this._multiplayerGames;
   },
 };
 
@@ -104,7 +118,7 @@ app.get('/api/getMultiplayerGames', (req, res) => {
       return res.status(404).json({ errorMessage: 'Common games not found' });
     }
 
-    return getAllSteamMultiplayerGames()
+    return steamApi.getAllSteamMultiplayerGames()
       .then((allMultiplayerGames) => {
         const multiplayerGames = commonGames.filter(game => allMultiplayerGames[game.appid]);
 

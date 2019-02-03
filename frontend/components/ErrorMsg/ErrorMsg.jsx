@@ -11,6 +11,7 @@ const ErrorMsg = ({ message }) => {
   return (
     <div className={css.errorMsg}>
       {message}
+      :(
     </div>
   );
 };
