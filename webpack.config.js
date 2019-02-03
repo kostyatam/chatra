@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'eval-source-map',
   entry: path.join(__dirname, 'frontend/index.jsx'),
   output: {
-    path: path.join(__dirname, 'public/dist'),
+    path: path.join(__dirname, 'public'),
     filename: 'bundle.js',
   },
   resolve: {
@@ -49,7 +49,7 @@ module.exports = {
     new MiniCssExtractPlugin('styles.css'),
   ],
   devServer: {
-    contentBase: path.join(__dirname, 'public/dist'),
+    contentBase: path.join(__dirname, 'public'),
     compress: true,
     port: 9000,
     proxy: {

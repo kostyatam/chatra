@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as axios from 'axios';
+import { API } from '../server/consts';
 import Search from './components/Search/Search';
 import ProfilesList from './components/ProfilesList/ProfilesList';
 import Games from './components/Games/Games';
@@ -37,7 +38,7 @@ export default class App extends React.Component {
     this.setState({
       userLoading: true,
     });
-    axios.get(`/api/getUserInfo?name=${name}`).then(({ data }) => {
+    axios.get(`${API.GET_USER_INFO.FULL_PATH}?name=${name}`).then(({ data }) => {
       const { player } = data;
       const { players, errorMessage } = this.state;
       const isAlreadyAdded = players.some(({ steamid }) => steamid === player.steamid);
@@ -72,7 +73,7 @@ export default class App extends React.Component {
       gamesLoading: true,
     });
 
-    axios.get(`/api/getMultiplayerGames?steamIds=${steamIds}`).then(({ data }) => {
+    axios.get(`${API.GET_MULTIPLAYER_GAMES.FULL_PATH}?steamIds=${steamIds}`).then(({ data }) => {
       const { games, errorMessage } = data;
       this.setState({
         games,
